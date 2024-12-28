@@ -30,14 +30,17 @@
 	<groupId>net.runelite</groupId>
 	<artifactId>launcher</artifactId>
 	<version>2.7.3-SNAPSHOT</version>
-	<name>RuneLite Launcher</name>
-	<description>Launcher for RuneLite client</description>
+	<name>RuneNite Launcher</name>
+	<description>Launcher for RuneNite client</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.outputTimestamp>1</project.build.outputTimestamp>
 
 		<main.class>net.runelite.launcher.Launcher</main.class>
+		<runelite.net>runelite.net</runelite.net>
+		<runelite.128>runelite_128.png</runelite.128>
+		<runelite.splash>runelite_splash.png</runelite.splash>
 	</properties>
 
 	<scm>
@@ -46,13 +49,6 @@
 		<developerConnection>scm:git:git@github.com:runelite/launcher</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
-
-	<distributionManagement>
-		<repository>
-			<id>runelite</id>
-			<url>dav:https://repo.runelite.net</url>
-		</repository>
-	</distributionManagement>
 
 	<repositories>
 		<repository>
@@ -149,6 +145,21 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>2.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>1.70</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.70</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -159,6 +170,7 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>logback.xml</exclude>
+					<exclude>net/runenite/**</exclude>
 				</excludes>
 				<filtering>true</filtering>
 			</resource>
@@ -166,6 +178,13 @@
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>logback.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>net/runenite/**</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
@@ -236,6 +255,16 @@
 									<includes>
 										<include>**</include>
 									</includes>
+								</filter>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/versions/**</exclude>
+										<exclude>META-INF/MANIFEST.MF</exclude>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
 								</filter>
 							</filters>
 						</configuration>

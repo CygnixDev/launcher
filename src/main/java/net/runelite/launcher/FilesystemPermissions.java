@@ -56,7 +56,7 @@ class FilesystemPermissions
 		}
 
 		final boolean elevated = isProcessElevated(ProcessHandle.current().pid());
-		// It is possible for .runelite to exist but be not writable, even when elevated. But we can update the ACLs
+		// It is possible for .runenite to exist but be not writable, even when elevated. But we can update the ACLs
 		// always when elevated, so attempt to fix the ACLs first.
 		if (elevated)
 		{
@@ -115,7 +115,7 @@ class FilesystemPermissions
 			if (elevated)
 			{
 				// Set the correct permissions on the newly created folder. This sets object inherit and container inherit,
-				// so all future files in .runelite should then have the correct permissions.
+				// so all future files in .runenite should then have the correct permissions.
 				try
 				{
 					final var sid = Launcher.getUserSID();

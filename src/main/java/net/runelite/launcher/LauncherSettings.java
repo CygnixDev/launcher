@@ -51,7 +51,7 @@ import org.slf4j.helpers.MessageFormatter;
 
 @Data
 @Slf4j
-class LauncherSettings
+public class LauncherSettings
 {
 	private static final String LAUNCHER_SETTINGS = "settings.json";
 

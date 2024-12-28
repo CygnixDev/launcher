@@ -83,14 +83,15 @@ import net.runelite.launcher.beans.Artifact;
 import net.runelite.launcher.beans.Bootstrap;
 import net.runelite.launcher.beans.Diff;
 import net.runelite.launcher.beans.Platform;
+import net.runenite.RuneNiteLauncher;
 import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class Launcher
 {
-	static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runelite");
+	public static final File RUNELITE_DIR = new File(System.getProperty("user.home"), ".runenite");
 	static final File LOGS_DIR = new File(RUNELITE_DIR, "logs");
-	static final File REPO_DIR = new File(RUNELITE_DIR, "repository2");
+	public static final File REPO_DIR = new File(RUNELITE_DIR, "repository2");
 	public static final File CRASH_FILES = new File(LOGS_DIR, "jvm_crash_pid_%p.log");
 	private static final String USER_AGENT = "RuneLite/" + LauncherProperties.getVersion();
 	static final String LAUNCHER_EXECUTABLE_NAME_WIN = "RuneLite.exe";
@@ -129,6 +130,8 @@ public class Launcher
 			parser.accepts("p").withRequiredArg();
 		}
 
+		RuneNiteLauncher.extendOptionsParser(parser);
+
 		final OptionSet options;
 		try
 		{
@@ -141,6 +144,11 @@ public class Launcher
 				new FatalErrorDialog("RuneLite was unable to parse the provided application arguments: " + ex.getMessage())
 					.open());
 			throw ex;
+		}
+
+		if (!RuneNiteLauncher.parseOptions(options))
+		{
+			return;
 		}
 
 		if (options.has("help"))
@@ -189,7 +197,7 @@ public class Launcher
 				// being called from ForkLauncher. All JVM options are already set.
 				var classpathOpt = String.valueOf(options.valueOf("classpath"));
 				var classpath = Streams.stream(Splitter.on(File.pathSeparatorChar)
-					.split(classpathOpt))
+						.split(classpathOpt))
 					.map(name -> new File(REPO_DIR, name))
 					.collect(Collectors.toList());
 				try
@@ -314,7 +322,7 @@ public class Launcher
 			Bootstrap bootstrap;
 			try
 			{
-				bootstrap = getBootstrap();
+				bootstrap = RuneNiteLauncher.getBootstrap();
 			}
 			catch (IOException | VerificationException | CertificateException | SignatureException | InvalidKeyException | NoSuchAlgorithmException ex)
 			{
@@ -332,7 +340,7 @@ public class Launcher
 
 			SplashScreen.stage(.07, null, "Checking for updates");
 
-			Updater.update(bootstrap, settings, args);
+			RuneNiteLauncher.updateLauncher(bootstrap, settings, args);
 
 			SplashScreen.stage(.10, null, "Tidying the cache");
 
@@ -380,7 +388,7 @@ public class Launcher
 
 			try
 			{
-				download(artifacts, settings.isNodiffs());
+				RuneNiteLauncher.download(artifacts, settings.isNodiffs());
 			}
 			catch (IOException ex)
 			{
@@ -392,7 +400,7 @@ public class Launcher
 			SplashScreen.stage(.80, null, "Verifying");
 			try
 			{
-				verifyJarHashes(artifacts);
+				RuneNiteLauncher.verifyJarHashes(artifacts);
 			}
 			catch (VerificationException ex)
 			{
@@ -695,7 +703,7 @@ public class Launcher
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 					final int totalBytes = totalDownloadBytes;
 					download(diff.getPath(), diff.getHash(), (completed) ->
-						SplashScreen.stage(START_PROGRESS, .80, null, diff.getName(), total + completed, totalBytes, true),
+							SplashScreen.stage(START_PROGRESS, .80, null, diff.getName(), total + completed, totalBytes, true),
 						out);
 					downloaded += diff.getSize();
 
@@ -733,7 +741,7 @@ public class Launcher
 			{
 				final int totalBytes = totalDownloadBytes;
 				download(artifact.getPath(), artifact.getHash(), (completed) ->
-					SplashScreen.stage(START_PROGRESS, .80, null, artifact.getName(), total + completed, totalBytes, true),
+						SplashScreen.stage(START_PROGRESS, .80, null, artifact.getName(), total + completed, totalBytes, true),
 					fout);
 				downloaded += artifact.getSize();
 			}
@@ -808,7 +816,7 @@ public class Launcher
 		}
 	}
 
-	private static String hash(File file) throws IOException
+	public static String hash(File file) throws IOException
 	{
 		HashFunction sha256 = Hashing.sha256();
 		return com.google.common.io.Files.asByteSource(file).hash(sha256).toString();
@@ -926,7 +934,7 @@ public class Launcher
 		Bootstrap bootstrap;
 		try
 		{
-			bootstrap = getBootstrap();
+			bootstrap = RuneNiteLauncher.getBootstrap();
 		}
 		catch (IOException | VerificationException | CertificateException | SignatureException | InvalidKeyException | NoSuchAlgorithmException ex)
 		{
@@ -996,6 +1004,7 @@ public class Launcher
 	static native boolean isProcessElevated(long pid);
 
 	static native void setFileACL(String folder, String[] sids);
+
 	static native String getUserSID();
 
 	static native long runas(String path, String args);

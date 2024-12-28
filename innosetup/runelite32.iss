@@ -49,7 +49,7 @@ Type: filesandordirs; Name: "{app}\jre"
 Type: files; Name: "{userprograms}\RuneLite.lnk"
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{%USERPROFILE}\.runelite\repository2"
+Type: filesandordirs; Name: "{%USERPROFILE}\.runenite\repository2"
 ; includes install_id, settings, etc
 Type: filesandordirs; Name: "{app}"
 
