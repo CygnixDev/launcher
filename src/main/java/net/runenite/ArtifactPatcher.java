@@ -23,6 +23,7 @@ import static net.runenite.RuneNiteLauncher.ensureDirectoryExists;
 import net.runenite.patches.PatchGameClientLocalhostCheck;
 import net.runenite.patches.PatchGameClientPort;
 import net.runenite.patches.PatchGameClientRsaSignature;
+import net.runenite.patches.PatchRuneLiteApi;
 import net.runenite.patches.PatchRuneLiteClient;
 import net.runenite.utils.ResourceManager;
 
@@ -36,7 +37,8 @@ public class ArtifactPatcher
 		new PatchGameClientRsaSignature(),
 		new PatchGameClientLocalhostCheck(),
 		new PatchGameClientPort(),
-		new PatchRuneLiteClient()
+		new PatchRuneLiteClient(),
+		new PatchRuneLiteApi()
 	);
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -114,8 +116,11 @@ public class ArtifactPatcher
 
 			if (previouslySigned)
 			{
+				log.info("Re-signing patched artifact");
 				sign(patchedJar.toPath());
 			}
+
+			log.info("Moving patched artifact to {}", artifactFile);
 
 			Files.move(patchedJar.toPath(), artifactFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 		}
